@@ -1,18 +1,18 @@
-- name: disable nodejs
+- name: disable default nodejs
   ansible.builtin.command: dnf module disable nodejs -y
 
-- name: enable nodejs
+- name: enable nodejs:20
   ansible.builtin.command: dnf module enable nodejs:20 -y
 
 - name: install nodejs
-  ansible.builtin.dnf:
+  ansible.builtin.dnf: # only works for Redhat family
     name: "{{ item }}"
     state: installed
   loop:
   - nodejs
   - mysql
-  
-- name: add user
+
+- name: create expense user
   ansible.builtin.user:
     name: expense
 
@@ -21,37 +21,37 @@
     path: /app
     state: directory
 
-- name: download application code to app directory
+- name: download backend code
   ansible.builtin.get_url:
     url: https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
     dest: /tmp/backend.zip
 
-- name: unzip code
+- name: unzip backend code
   ansible.builtin.unarchive:
-    src: /tmp/backend.zip
+    src: /tmp/backend.zip # by default checks in ansible server
     dest: /app
     remote_src: yes
 
-- name: npm install
+- name: install npm dependencies
   ansible.builtin.command: npm install
   args:
     chdir: /app
 
 - name: copy backend service
-  ansible.builtin.template:
-    src: backend.service.j2
+  ansible.builtin.copy:
+    src: backend.service
     dest: /etc/systemd/system/backend.service
 
-- name: install python dependencies
-  ansible.builtin.pip:
+- name: install python mysql dependencies
+  ansible.builtin.pip: 
     name:
-    - PyMySQL
+    - PyMySQL # to connect MySQL DB from Ansible
     - cryptography
     executable: pip3.9 # pip3.11 if python version is 3.11
 
 - name: import data into mysql
   community.mysql.mysql_db:
-    login_user: "{{ login_user }}"
+    login_user: root
     login_password: "{{ login_password }}"
     login_host: "{{ login_host }}"
     target: /app/schema/backend.sql
@@ -67,3 +67,5 @@
     name: backend
     state: started
     enabled: yes
+
+    
