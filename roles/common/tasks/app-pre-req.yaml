@@ -1,3 +1,7 @@
+- name: print app location
+  ansible.builtin.debug:
+    msg: "app location is {{ app_location }}"
+
 - name: remove directory
   ansible.builtin.file:
     path: "{{ app_location }}"
