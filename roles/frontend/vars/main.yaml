@@ -1,1 +1,2 @@
 BACKEND_API_URL: backend.avyan.site
+app_location: /usr/share/nginx/html
