@@ -1,38 +1,31 @@
-- name: disable nodejs
+- name: disable default nodejs
   ansible.builtin.command: dnf module disable nodejs -y
 
-- name: enable nodejs
+- name: enable nodejs:20
   ansible.builtin.command: dnf module enable nodejs:20 -y
 
 - name: install nodejs
-  ansible.builtin.dnf:
+  ansible.builtin.dnf: # only works for Redhat family
     name: "{{ item }}"
     state: installed
   loop:
   - nodejs
   - mysql
-  
-- name: add user
+
+- name: create expense user
   ansible.builtin.user:
     name: expense
 
-- name: create app directory
-  ansible.builtin.file:
-    path: /app
-    state: directory
+- name: run app pre-requisites
+  tags:
+  - deployment
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: app-pre-req
 
-- name: download application code to app directory
-  ansible.builtin.get_url:
-    url: https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
-    dest: /tmp/backend.zip
-
-- name: unzip code
-  ansible.builtin.unarchive:
-    src: /tmp/backend.zip
-    dest: /app
-    remote_src: yes
-
-- name: npm install
+- name: install npm dependencies
+  tags:
+  - deployment
   ansible.builtin.command: npm install
   args:
     chdir: /app
@@ -42,10 +35,10 @@
     src: backend.service.j2
     dest: /etc/systemd/system/backend.service
 
-- name: install python dependencies
-  ansible.builtin.pip:
+- name: install python mysql dependencies
+  ansible.builtin.pip: 
     name:
-    - PyMySQL
+    - PyMySQL # to connect MySQL DB from Ansible
     - cryptography
     executable: pip3.9 # pip3.11 if python version is 3.11
 
@@ -65,5 +58,5 @@
 - name: start and enable backend service
   ansible.builtin.service:
     name: backend
-    state: started
+    state: restarted
     enabled: yes
