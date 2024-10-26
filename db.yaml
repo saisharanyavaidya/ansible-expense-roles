@@ -1,7 +1,7 @@
 - name: configure DB service
   hosts: db
   vars_files:
-  - credentials.yaml
+  - credentials.yaml # comment this if not using credentials.yaml file for password and instead providing that in Vars folder
   become: yes
   roles:
   - db

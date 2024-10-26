@@ -1,2 +1,2 @@
 login_host: db.avyan.site
-mysql_root_password: ExpenseApp@1
+mysql_root_password: ExpenseApp@1 # comment this if you are using credentials.yaml file to read this password
