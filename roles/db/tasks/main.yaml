@@ -10,7 +10,7 @@
     enabled: yes
 
 - name: install python dependencies
-  ansible.builtin.pip:
+  ansible.builtin.pip: # Need to install these dependencies for Ansible to connect to MySQL
     name:
     - PyMySQL
     - cryptography

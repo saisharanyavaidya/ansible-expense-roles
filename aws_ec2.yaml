@@ -1,4 +1,4 @@
-plugin: amazon.aws.aws_ec2
+plugin: amazon.aws.aws_ec2 # using this plugin, ansible connects to AWS
 regions:
 - us-east-1
 keyed_groups:
