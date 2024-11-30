@@ -1,3 +1,4 @@
+# this file is created to test Dynamic Inventory.. Inventory used is aws-ec2.yaml and playbook is this dynamic.yaml
 - name: install few packages
   hosts: all
   become: yes

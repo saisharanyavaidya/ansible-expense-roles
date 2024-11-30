@@ -1,3 +1,4 @@
+# Created to explain about Ansible vs Terraform
 - name: create ec2 and r53 records
   hosts: localhost
   vars:

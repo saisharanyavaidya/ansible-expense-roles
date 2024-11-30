@@ -1,3 +1,4 @@
+# Added this file as part of Ansible Roles to run db, backend, frontend directly using one file.. check Ansible Roles section
 - name: "configure {{ component }} server"
   hosts: "{{ component }}"
   become: yes
